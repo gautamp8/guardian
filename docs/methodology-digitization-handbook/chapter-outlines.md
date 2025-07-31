@@ -227,7 +227,7 @@
 **Purpose**: Implement complex calculation logic using JavaScript in Guardian.
 
 **Key Topics**:
-- JavaScript development environment setup
+- JavaScript/Python development environment setup
 - Guardian calculation block architecture
 - Input/output document handling
 - Mathematical operations and precision handling
@@ -270,7 +270,6 @@
 - Unit testing for calculation functions
 - Integration testing with complete workflows
 - Test data generation and management
-- Automated testing frameworks and CI/CD
 - Performance testing for large datasets
 - Regression testing for methodology updates
 
@@ -319,18 +318,15 @@
 
 **VM0033 Context**: User management for VM0033 implementation, including VVB accreditation, project developer registration, and Verra administrator roles.
 
-### Chapter 24: Monitoring and Analytics
-**Purpose**: Implement comprehensive monitoring and analytics for deployed methodologies.
+### Chapter 24: Monitoring and Analytics - Guardian Indexer
+**Purpose**: Monitoring and analytics for deployed methodologies and data submitted via Indexer
 
 **Key Topics**:
-- System monitoring and health checks
 - Usage analytics and reporting
-- Performance monitoring and alerting
-- Business intelligence and dashboard creation
 - Data export and reporting capabilities
 - Compliance monitoring and audit trails
 
-**VM0033 Context**: Monitoring and analytics dashboard for VM0033 implementation, tracking project registrations, credit issuances, and system performance.
+**VM0033 Context**: Viewing all data on Indexer, tracking project registrations, credit issuances
 
 ### Chapter 25: Maintenance and Updates
 **Purpose**: Maintain and evolve deployed methodologies over time.
@@ -340,7 +336,6 @@
 - Bug fixing and issue resolution
 - Methodology updates and regulatory changes
 - User feedback integration and feature requests
-- Security updates and vulnerability management
 - Long-term support and lifecycle planning
 
 **VM0033 Context**: Maintenance strategy for VM0033 implementation, including handling Verra methodology updates and regulatory changes.
@@ -352,11 +347,9 @@
 
 **Key Topics**:
 - External system integration patterns
+- Data transformation via blocks
 - Data synchronization and consistency
-- API gateway and service mesh architectures
-- Third-party service integration
-- Legacy system integration and migration
-- Real-time data feeds and streaming
+- Real-time data feeds and streaming (Metered Policy Example)
 
 **VM0033 Context**: Integration of VM0033 with external monitoring systems, satellite data feeds, and Verra's registry systems.
 
@@ -366,12 +359,11 @@
 **Key Topics**:
 - Common digitization pitfalls and solutions
 - Debugging techniques and tools
-- Performance troubleshooting
 - Data quality issues and resolution
 - User experience problems and fixes
 - Integration and compatibility issues
 
-**VM0033 Context**: Specific troubleshooting scenarios encountered during VM0033 implementation and their solutions.
+**VM0033 Context**: Some specific troubleshooting scenarios encountered during VM0033 implementation and their solutions.
 
 ---
 

@@ -180,25 +180,25 @@ Comprehensive glossary of terms used in methodology digitization and Guardian pl
 
 {% tabs %}
 {% tab title="Complete Handbook" %}
-**Total Time**: 35-40 hours
+**Total Time**: 20-30 hours
 
 Comprehensive coverage of all aspects of methodology digitization from foundation to advanced topics.
 {% endtab %}
 
 {% tab title="Foundation & Schema" %}
-**Part I-III**: 15-20 hours
+**Part I-III**: 12-16 hours
 
 Essential knowledge for understanding Guardian platform and designing data structures.
 {% endtab %}
 
 {% tab title="Workflow & Logic" %}
-**Part IV-V**: 15-20 hours
+**Part IV-V**: 8-11 hours
 
 Core implementation skills for policy workflows and calculation logic.
 {% endtab %}
 
 {% tab title="Integration & Advanced" %}
-**Part VI-VIII**: 8-12 hours
+**Part VI-VIII**: 5-8 hours
 
 Production deployment, maintenance, and advanced techniques.
 {% endtab %}
