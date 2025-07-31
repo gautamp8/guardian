@@ -1,4 +1,8 @@
-# Methodology Digitization Handbook - Table of Contents
+# Table of Contents
+
+{% hint style="info" %}
+**Navigation Tip**: Use the sidebar navigation or click on any chapter title to jump directly to detailed chapter outlines.
+{% endhint %}
 
 ## Part I: Foundation and Preparation
 
@@ -121,27 +125,98 @@ Comprehensive glossary of terms used in methodology digitization and Guardian pl
 
 ## Chapter Organization
 
-Each chapter follows a consistent structure:
-- **Learning Objectives**: What you'll accomplish in this chapter
-- **Prerequisites**: Required knowledge or completed previous chapters
-- **Conceptual Overview**: Theory and background information
-- **VM0033 Example**: Practical application using our reference methodology
-- **Step-by-Step Implementation**: Detailed instructions with code/configuration
-- **Testing and Validation**: How to verify your implementation
-- **Common Issues**: Troubleshooting and problem-solving
-- **Best Practices**: Recommendations and optimization tips
-- **Chapter Summary**: Key takeaways and next steps
+{% hint style="success" %}
+**Consistent Structure**: Each chapter follows the same format for easy navigation and learning.
+{% endhint %}
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">Section</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Learning Objectives</strong></td>
+      <td>What you'll accomplish in this chapter</td>
+    </tr>
+    <tr>
+      <td><strong>Prerequisites</strong></td>
+      <td>Required knowledge or completed previous chapters</td>
+    </tr>
+    <tr>
+      <td><strong>Conceptual Overview</strong></td>
+      <td>Theory and background information</td>
+    </tr>
+    <tr>
+      <td><strong>VM0033 Example</strong></td>
+      <td>Practical application using our reference methodology</td>
+    </tr>
+    <tr>
+      <td><strong>Step-by-Step Implementation</strong></td>
+      <td>Detailed instructions with code/configuration</td>
+    </tr>
+    <tr>
+      <td><strong>Testing and Validation</strong></td>
+      <td>How to verify your implementation</td>
+    </tr>
+    <tr>
+      <td><strong>Common Issues</strong></td>
+      <td>Troubleshooting and problem-solving</td>
+    </tr>
+    <tr>
+      <td><strong>Best Practices</strong></td>
+      <td>Recommendations and optimization tips</td>
+    </tr>
+    <tr>
+      <td><strong>Chapter Summary</strong></td>
+      <td>Key takeaways and next steps</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Estimated Reading Time
 
-- **Complete Handbook**: 35-40 hours
-- **Part I-III (Foundation & Schema)**: 15-20 hours  
-- **Part IV-V (Workflow & Logic)**: 15-20 hours
-- **Part VI-VIII (Integration & Advanced)**: 8-12 hours
+{% tabs %}
+{% tab title="Complete Handbook" %}
+**Total Time**: 35-40 hours
+
+Comprehensive coverage of all aspects of methodology digitization from foundation to advanced topics.
+{% endtab %}
+
+{% tab title="Foundation & Schema" %}
+**Part I-III**: 15-20 hours
+
+Essential knowledge for understanding Guardian platform and designing data structures.
+{% endtab %}
+
+{% tab title="Workflow & Logic" %}
+**Part IV-V**: 15-20 hours
+
+Core implementation skills for policy workflows and calculation logic.
+{% endtab %}
+
+{% tab title="Integration & Advanced" %}
+**Part VI-VIII**: 8-12 hours
+
+Production deployment, maintenance, and advanced techniques.
+{% endtab %}
+{% endtabs %}
 
 ## Prerequisites
 
-- Basic understanding of environmental methodologies and carbon markets
-- Familiarity with JSON and basic programming concepts
-- Access to Guardian platform instance for hands-on practice
-- VM0033 methodology document for reference
+{% hint style="warning" %}
+**Before You Begin**: Ensure you have the following prerequisites in place.
+{% endhint %}
+
+* Basic understanding of environmental methodologies and carbon markets
+* Familiarity with JSON and basic programming concepts
+* Access to Guardian platform instance for hands-on practice
+* VM0033 methodology document for reference
+
+---
+
+{% hint style="info" %}
+**Next Steps**: Ready to begin? Start with the [detailed chapter outlines](chapter-outlines.md) or jump directly to Chapter 1.
+{% endhint %}

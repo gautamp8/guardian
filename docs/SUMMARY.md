@@ -796,6 +796,14 @@
 
 ***
 
+## Methodology Digitization
+
+* [📚 Methodology Digitization Handbook](methodology-digitization-handbook/README.md)
+  * [📋 Table of Contents](methodology-digitization-handbook/table-of-contents.md)
+  * [📝 Chapter Outlines](methodology-digitization-handbook/chapter-outlines.md)
+
+***
+
 * [Feedback](feedback/README.md)
   * [Feedback in Pipelines](feedback/feedback-in-pipelines.md)
 * [📈 Guardian in Production](guardian-in-production/README.md)
