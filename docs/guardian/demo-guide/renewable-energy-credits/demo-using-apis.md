@@ -1,4 +1,4 @@
-# Demo Using APIs and UI
+# ⚙️ Demo Using APIs and UI
 
 ## 1. Login as a User
 
@@ -56,7 +56,7 @@
 
 ## Requesting configuration of block by block ID
 
-<mark style="color:blue;">`GET`</mark> `/api/v1/policies/621376c8e6763a0014fb0de4/blocks/bb342b37-8bb6-4595-93fc-98fd63a23c16`&#x20;
+<mark style="color:blue;">`GET`</mark> `/api/v1/policies/621376c8e6763a0014fb0de4/blocks/bb342b37-8bb6-4595-93fc-98fd63a23c16`
 
 {% tabs %}
 {% tab title="200: OK Successful Operation" %}
@@ -74,7 +74,7 @@
 
 ### 1.5 At present only PolicyRolesBlock is available to the user. Select the "INSTALLER" role.
 
-## Registering the role as&#x20;
+## Registering the role as
 
 <mark style="color:green;">`POST`</mark> `/api/v1/policies/621376c8e6763a0014fb0de4/blocks/bb342b37-8bb6-4595-93fc-98fd63a23c16`
 

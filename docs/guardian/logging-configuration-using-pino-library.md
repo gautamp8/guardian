@@ -1,4 +1,4 @@
-# Logging Configuration using Pino Library
+# 📕 Logging Configuration using Pino Library
 
 ## Introduction
 
@@ -47,7 +47,7 @@ In this case, logs will also be recorded in a log file and Seq storage.
 
 ### Console
 
-Logging to the console will occur only if CONSOLE is included in the TRANSPORTS variable.&#x20;
+Logging to the console will occur only if CONSOLE is included in the TRANSPORTS variable.
 
 **Example:**
 
@@ -57,7 +57,7 @@ TRANSPORTS="CONSOLE"
 
 ### MongoDB
 
-Logging to MongoDB will occur only if the DB\_LOGGER\_NAME variable is specified and MONGO is included in the TRANSPORTS variable.&#x20;
+Logging to MongoDB will occur only if the DB\_LOGGER\_NAME variable is specified and MONGO is included in the TRANSPORTS variable.
 
 **Example:**
 
@@ -75,7 +75,7 @@ DB\_LOGGER\_COLLECTION: The name of the collection where logs will be stored.
 
 ### File
 
-Logging to a file will occur only if FILE is included in the TRANSPORTS variable.&#x20;
+Logging to a file will occur only if FILE is included in the TRANSPORTS variable.
 
 **Example:**
 
@@ -95,7 +95,7 @@ If you want to use Seq storage ([https://datalust.co/seq](https://datalust.co/se
 docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -p 5341:80 datalust/seq:latest
 ```
 
-Logging to Seq will occur only if SEQ is included in the TRANSPORTS variable.&#x20;
+Logging to Seq will occur only if SEQ is included in the TRANSPORTS variable.
 
 **Example:**
 

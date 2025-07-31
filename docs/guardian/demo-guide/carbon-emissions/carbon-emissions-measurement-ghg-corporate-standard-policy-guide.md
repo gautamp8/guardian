@@ -2,7 +2,7 @@
 description: Policy developed by TYMLEZ
 ---
 
-# Carbon Emissions Measurement - GHG Corporate Standard Policy Guide
+# 🏢 Carbon Emissions Measurement - GHG Corporate Standard Policy Guide
 
 On this page you'll find:
 

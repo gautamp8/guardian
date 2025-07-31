@@ -2,7 +2,7 @@
 description: AgreCalc and Cool Farm Tool develop by Dovu
 ---
 
-# Dovu Methodologies
+# 🍃 Dovu Methodologies
 
 On this page you'll find:​
 

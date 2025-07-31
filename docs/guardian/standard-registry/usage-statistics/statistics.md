@@ -1,4 +1,4 @@
-# Statistics
+# 💻 Statistics
 
 1. [Step By Step Process](statistics.md#id-1.-step-by-step-process)
 2. [Demo Video](statistics.md#id-2.-demo-video)

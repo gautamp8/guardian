@@ -1,4 +1,4 @@
-# Policy execution record and replay using UI
+# 💻 Policy execution record and replay using UI
 
 1. [Step By Step Process](policy-execution-record-and-replay-using-ui.md#id-1.-step-by-step-process)
 2. [Demo Video](policy-execution-record-and-replay-using-ui.md#id-2.-demo-video)

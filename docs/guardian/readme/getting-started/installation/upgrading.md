@@ -1,4 +1,4 @@
-# Upgrading
+# ⬆️ Upgrading
 
 ## Introduction
 

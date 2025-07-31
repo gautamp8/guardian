@@ -1,2 +1,2 @@
-# Token Template
+# 📒 Token Template
 

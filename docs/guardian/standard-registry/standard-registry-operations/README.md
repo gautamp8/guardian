@@ -1,2 +1,2 @@
-# Standard Registry Operations
+# 🛠️ Standard Registry Operations
 

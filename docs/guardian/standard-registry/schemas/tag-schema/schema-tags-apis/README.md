@@ -1,2 +1,2 @@
-# Schema Tags APIs
+# ⚙️ Schema Tags APIs
 

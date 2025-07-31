@@ -1,4 +1,4 @@
-# Token Operations
+# 🪙 Token Operations
 
 For a demo example of following steps, here is the policy timestamp: **1675164687.693099003**
 

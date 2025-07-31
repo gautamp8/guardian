@@ -1,4 +1,4 @@
-# Methane Emission Reduction by Adjusted Water Management Practice in Rice Cultivation
+# 🍚 Methane Emission Reduction by Adjusted Water Management Practice in Rice Cultivation
 
 ## Table of Contents
 

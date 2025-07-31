@@ -1,4 +1,4 @@
-# Search using UI
+# 💻 Search using UI
 
 Guided Search can be performed by two ways:
 

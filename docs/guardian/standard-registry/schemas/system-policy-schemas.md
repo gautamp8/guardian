@@ -1,4 +1,4 @@
-# Types of Schemas
+# ℹ️ Types of Schemas
 
 ## Schema Demo
 

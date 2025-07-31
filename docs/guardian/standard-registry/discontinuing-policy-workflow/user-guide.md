@@ -1,4 +1,4 @@
-# User Guide
+# 💻 User Guide
 
 1. [Step By Step Process](user-guide.md#id-1.-step-by-step-process)
 2. [Demo Video](user-guide.md#id-2.-demo-video)
@@ -39,8 +39,8 @@
 4. Schemas : Map the source policy schemas with the destination policy schemas.
 5. Roles : Map source policy roles with the destination policy roles.
 6. Groups : Map the source policy groups with the destination policy groups.
-7. Tokens: Map the token templates&#x20;
-8. Blocks :  Block mapping (while state migrating is enabled)
+7. Tokens: Map the token templates
+8. Blocks : Block mapping (while state migrating is enabled)
 9. Clicking OK you will start an asynchronous migration task
 
 <figure><img src="../../../.gitbook/assets/image (602).png" alt=""><figcaption></figcaption></figure>

@@ -1,4 +1,4 @@
-# CDM AMS-III.H.: Methane Recovery in Wastewater Treatment
+# 🏢 CDM AMS-III.H.: Methane Recovery in Wastewater Treatment
 
 ## Table of contents <a href="#table-of-contents" id="table-of-contents"></a>
 

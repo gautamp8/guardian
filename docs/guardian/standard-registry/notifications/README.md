@@ -1,4 +1,4 @@
-# Notifications
+# 🔔 Notifications
 
 Below is the diagram to exhibit notifications sent from multiple services:
 

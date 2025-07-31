@@ -1,4 +1,4 @@
-# Mobile operation for the Standard Registry
+# 📱 Mobile operation for the Standard Registry
 
 ### **Creation of a new account**
 

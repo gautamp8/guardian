@@ -1,4 +1,4 @@
-# Getting Started
+# 🌏 Getting Started
 
 ## **1. Introduction**
 
@@ -11,10 +11,10 @@ Below are the universal software prerequisites, followed by network-specific ite
 ### 2.1 Universal software
 
 1. [Git](https://git-scm.com/downloads) – source-control tooling
-2. [Docker](https://www.docker.com/) – one-command build & run&#x20;
+2. [Docker](https://www.docker.com/) – one-command build & run
 3. [MongoDB v6](https://www.mongodb.com/), [Node.js v16](https://nodejs.org/en), and [NATS 1.12.2](https://nats.io/) – auto-installed when using Docker-Compose
 4. [Web3.Storage account](https://web3.storage/) – IPFS pinning service
-5. [Filebase account](https://filebase.com/) – S3-compatible IPFS pinning&#x20;
+5. [Filebase account](https://filebase.com/) – S3-compatible IPFS pinning
 6. [Redis 7.3.0](https://redict.io/) – in-memory cache & message broker (auto-provisioned by the Docker stack)
 
 ### 2.2 Hedera network

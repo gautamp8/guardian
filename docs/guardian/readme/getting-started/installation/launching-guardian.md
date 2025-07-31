@@ -1,4 +1,4 @@
-# Launching Guardian
+# 💻 Launching Guardian
 
 Once [http://localhost:3000](http://localhost:3000) is launched, we need to first generate Operator ID and Operator Key by clicking on Generate button as shown below:
 
@@ -70,13 +70,13 @@ Where the list of `attributes` is extendable, and all attributes in it are **opt
 **Note:** If you wish you have an option to deploy your own instances (from an account that your organization controls - e.g. an ‘official’ account of your organization). We have created scripts for easy deployment you can use. In this case the following procedure needs to be followed:
 
 1. Navigate to `./guardian-cli`folder.
-2. Execute `npm install`  followed by `npm run build`  and `npm i -g`
+2. Execute `npm install` followed by `npm run build` and `npm i -g`
 3. Now the scripts are ready, and you can execute at the level of the `guardian-cli` folder
-4. RETIRE contract deployment:&#x20;
+4. RETIRE contract deployment:
 
 `guardian-cli deploy-contract-file ../contracts/retire/Retire.sol Retire {account} {key} -n {network}`
 
-5. WIPE contract deployment:&#x20;
+5. WIPE contract deployment:
 
 `guardian-cli deploy-contract-file ../contracts/wipe/Wipe.sol Wipe {account} {key} -n {network}`
 

@@ -1,4 +1,4 @@
-# API for Returning Schema Tree
+# ⚙️ API for Returning Schema Tree
 
 ## Returns schema tree.
 

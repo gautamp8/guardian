@@ -1,2 +1,2 @@
-# Remote Work GHG Policy
+# 🏡 Remote Work GHG Policy
 

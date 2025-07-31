@@ -2,7 +2,7 @@
 description: This policy is developed by Envision
 ---
 
-# GHGP Corporate Standard
+# 🏭 GHGP Corporate Standard
 
 ## Table of Contents
 
@@ -24,9 +24,9 @@ description: This policy is developed by Envision
 
 [Step by Step](ghgp-corporate-standard.md#toc141460620)
 
-&#x20;     [Organization Flow](ghgp-corporate-standard.md#toc141460621)
+[Organization Flow](ghgp-corporate-standard.md#toc141460621)
 
-&#x20;    [ Administrator (Registry) Flow](ghgp-corporate-standard.md#toc141460622)
+[Administrator (Registry) Flow](ghgp-corporate-standard.md#toc141460622)
 
 [Futureproofing (Automated GHG Inventories)](ghgp-corporate-standard.md#toc141460623)
 

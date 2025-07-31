@@ -1,4 +1,4 @@
-# Creating Schema using UI
+# 💻 Creating Schema using UI
 
 To create a new Schemas, click on the **New** button at the top right corner.
 
@@ -36,7 +36,7 @@ Files with **.schema** extension are only accepted. These files are in zip forma
 
 #### Import from IPFS
 
-You can also import Schema from IPFS by entering the correct Schema timestamp.&#x20;
+You can also import Schema from IPFS by entering the correct Schema timestamp.
 
 Sample iREC Schema timestamp is below:
 

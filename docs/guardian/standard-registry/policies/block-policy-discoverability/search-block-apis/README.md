@@ -1,2 +1,2 @@
-# Search Block APIs
+# ⚙️ Search Block APIs
 

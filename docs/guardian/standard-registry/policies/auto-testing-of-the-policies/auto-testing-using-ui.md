@@ -1,4 +1,4 @@
-# Auto Testing using UI
+# 💻 Auto Testing using UI
 
 ## **Add test data to the Policy**
 
@@ -20,8 +20,7 @@ Tests can be added to the policy via the corresponding menu option as shown on t
 
 ### 2. Running Tests
 
-To launch a test navigate to the tests list using the ‘Test details’ menu option\
-
+To launch a test navigate to the tests list using the ‘Test details’ menu option\\
 
 <figure><img src="../../../../.gitbook/assets/2 (22).png" alt=""><figcaption></figcaption></figure>
 

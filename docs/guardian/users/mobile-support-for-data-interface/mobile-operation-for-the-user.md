@@ -1,4 +1,4 @@
-# Mobile Operation for the user
+# 📱 Mobile Operation for the user
 
 ### **Creation of a new account**
 

@@ -1,4 +1,4 @@
-# Creating Token using UI
+# 💻 Creating Token using UI
 
 Following are the steps to create a token:
 

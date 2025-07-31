@@ -1,4 +1,4 @@
-# Tools using UI
+# 💻 Tools using UI
 
 1. [Step By Step Process](tools-using-ui.md#id-1.-step-by-step-process)
 2. [Demo Video](tools-using-ui.md#id-2.-demo-video)
@@ -20,7 +20,7 @@ Tools can be imported by clicking on "Import" button in Tools page as shown belo
 {% hint style="info" %}
 **Important note on differences between imports of Tools vs. Modules and Policies.**
 
-&#x20;When importing Tools via message IDs:
+When importing Tools via message IDs:
 
 1. Tool is non-editable when it is already published.
 2. A single Tool can only be imported once, if it is already been imported then no additional import can take place.
@@ -97,8 +97,6 @@ Variables are used as an external interface of Tools. They allow the usage of na
 Variables can be created/edited by using the right side tab name "Variables" in policy configurator as shown below:
 
 <figure><img src="../../../../.gitbook/assets/image (324).png" alt=""><figcaption></figcaption></figure>
-
-
 
 #### 3.1.3 Input/Output Events
 

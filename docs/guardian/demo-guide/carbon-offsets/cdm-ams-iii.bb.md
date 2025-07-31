@@ -1,4 +1,4 @@
-# CDM AMS III.BB: Electrification of communities through grid extension
+# 🏭 CDM AMS III.BB: Electrification of communities through grid extension
 
 ## Table of Contents
 

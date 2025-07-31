@@ -1,4 +1,4 @@
-# Creating Policy using UI
+# 💻 Creating Policy using UI
 
 Once you login as a Standard Registry and finish the setup, click on Policies tab.
 

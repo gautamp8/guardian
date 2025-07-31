@@ -5,7 +5,7 @@ description: >-
 coverY: 0
 ---
 
-# Cloud Deployment
+# ☁️ Cloud Deployment
 
 This document provides a comprehensive guide for deploying the platform on various cloud providers, including AWS, GCP, and Azure. The guide focuses on using Rancher as the cluster management tool, making it applicable to a wide range of cloud providers supported by Rancher, as well as on-premises and hybrid cloud deployments.
 

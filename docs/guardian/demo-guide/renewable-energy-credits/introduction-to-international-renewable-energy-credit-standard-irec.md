@@ -1,4 +1,4 @@
-# Introduction to International Renewable Energy Credit Standard (iREC)
+# 📖 Introduction to International Renewable Energy Credit Standard (iREC)
 
 ## **Policy Description**:
 

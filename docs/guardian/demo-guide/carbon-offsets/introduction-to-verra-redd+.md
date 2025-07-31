@@ -1,4 +1,4 @@
-# Introduction to Verra Redd+
+# 📖 Introduction to Verra Redd+
 
 ## Policy Description:
 

@@ -1,11 +1,11 @@
-# Search Policy using UI
+# 💻 Search Policy using UI
 
 1. [Step By Step Process](search-policy-using-ui.md#id-1.-step-by-step-process)
 2. [Demo Video](search-policy-using-ui.md#id-2.-demo-video)
 
 ## 1. Step By Step Process
 
-Policies can be searched by clicking on "Search policies" button. It can be searched based on their similarity to the given policy.&#x20;
+Policies can be searched by clicking on "Search policies" button. It can be searched based on their similarity to the given policy.
 
 <figure><img src="../../../../.gitbook/assets/image (4) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 

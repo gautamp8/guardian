@@ -1,4 +1,4 @@
-# Search Block using UI
+# 💻 Search Block using UI
 
 1. [Step By Step Process](search-block-using-ui.md#id-1.-step-by-step-process)
 2. [Demo Video](search-block-using-ui.md#id-2.-demo-video)
@@ -45,9 +45,9 @@ Search results are displayed as folded groups by Policy (policy name is displaye
 
 The results are sorted by (in the correct order):
 
-1\.     The number of the similar blocks in the matching sequence
+1\. The number of the similar blocks in the matching sequence
 
-2\.     Cumulative similarity score (%%) of the blocks
+2\. Cumulative similarity score (%%) of the blocks
 
 <figure><img src="../../../../.gitbook/assets/image (5) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 

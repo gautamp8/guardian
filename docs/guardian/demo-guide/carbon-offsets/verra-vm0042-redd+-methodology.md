@@ -2,7 +2,7 @@
 description: Policy developed by Envision Blockchain
 ---
 
-# VM0042 Methodology for Improved Agricultural Land Management
+# 🎍 VM0042 Methodology for Improved Agricultural Land Management
 
 * [Policy Description](verra-vm0042-redd+-methodology.md#policy-description)
 * [Workflow Description](verra-vm0042-redd+-methodology.md#workflow-description)

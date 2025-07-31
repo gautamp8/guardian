@@ -2,7 +2,7 @@
 description: Policy developed by Envision Blockchain
 ---
 
-# VM0017 Adoption of Sustainable Agricultural Land Management, v1.0
+# 🎍 VM0017 Adoption of Sustainable Agricultural Land Management, v1.0
 
 * [Policy Description](verra-vm0017-redd+-methodology.md#policy-description)
 * [Workflow Description](verra-vm0017-redd+-methodology.md#workflow-description)

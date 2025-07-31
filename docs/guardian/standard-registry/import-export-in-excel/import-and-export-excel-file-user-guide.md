@@ -1,4 +1,4 @@
-# Import and Export Excel file User Guide
+# 💻 Import and Export Excel file User Guide
 
 The ‘Import/Export schemas from/to Excel’ UI menu options trigger the process of seamless transformation of schemas written in Excel into valid Guardian JSON schemas, and vice versa. The content of such schema excel files must conform to the format presented in the template accessible via the corresponding button on the 'Policy Schemas’ page. The menu options for actioning Import and Export are accessible via the ‘Manage Policies’ and ‘Policy Schemas’ pages.
 
@@ -125,7 +125,7 @@ Use the corresponding menu option : **Export schemas to Excel** in the Manage Po
 
 For math expressions in Excel schema documents to be recognised by Guardian the following is required
 
-1\.     **‘Field Type’** value set to **“Auto-Calculate”**
+1\. **‘Field Type’** value set to **“Auto-Calculate”**
 
 <figure><img src="../../../.gitbook/assets/image (466).png" alt=""><figcaption></figcaption></figure>
 
@@ -149,7 +149,7 @@ The fields from embedded schema definition tab (e.g. titled as ‘Production Dev
 
 2. **How they are processed by Guardian on import**
 
-On import for each VC schema imported Guardian will create basic scaffolding of Policy block, which includes  “_requestVcDocumentBlock” and a “customLogicBlock”_ if the imported schema contained’Auto-Calculate’ fields.
+On import for each VC schema imported Guardian will create basic scaffolding of Policy block, which includes “_requestVcDocumentBlock” and a “customLogicBlock”_ if the imported schema contained’Auto-Calculate’ fields.
 
 <figure><img src="../../../.gitbook/assets/image (462).png" alt=""><figcaption></figcaption></figure>
 
@@ -179,7 +179,7 @@ Schema structure does not allow to leave empty fields in the resulting document.
 
 <figure><img src="../../../.gitbook/assets/image (470).png" alt=""><figcaption></figcaption></figure>
 
-3. Description of the functions used in the expressions in the  customLogicBlock
+3. Description of the functions used in the expressions in the customLogicBlock
 
 For each function Guardian generates a template which helpfully lists in the comments the expressions in which the function is used.
 

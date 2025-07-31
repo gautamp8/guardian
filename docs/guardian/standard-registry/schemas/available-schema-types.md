@@ -1,4 +1,4 @@
-# Available Schema Types
+# 📂 Available Schema Types
 
 ## **Embracing GBBC Specifications for Universal Data Comparability**
 
@@ -53,4 +53,3 @@ The utilization of Schema Types is pivotal for the lifecycle of digital environm
 | GeoJSON     | Define to add polygons, lines on map                                                                                                        | Alza\_....                                                                                                                                             |
 | URI         | Example link to ipfs files                                                                                                                  | ${schema}://{auth}/….                                                                                                                                  |
 | SentinelHub | Define Geographic rastery imagery coordinates                                                                                               | Height, Width, From and To Date.                                                                                                                       |
-

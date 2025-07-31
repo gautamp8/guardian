@@ -1,4 +1,4 @@
-# Building from source and run using Docker
+# 🔨 Building from source and run using Docker
 
 [Step By Step Process](./#step-by-step-process)
 
@@ -221,7 +221,7 @@ About docker-compose: from the end of June 2023 Compose V1 won’t be supported 
 7. Browse to [http://localhost:3000](http://localhost:3000) and complete the setup. To get more info, please check: [Launching Guardian](../launching-guardian.md)
 8. For increased security remove credentials from `.env` file and enable network access
 
-On first state the credentials from `.env` file are copied into the secure  storage as configured (e.g. Vault). After that Guardian does not use any credentials stored in the .env file, thus they should be removed for security reasons.
+On first state the credentials from `.env` file are copied into the secure storage as configured (e.g. Vault). After that Guardian does not use any credentials stored in the .env file, thus they should be removed for security reasons.
 
 ### Process on How to Configure SSL Encryption:
 
