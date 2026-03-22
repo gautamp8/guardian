@@ -1,23 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { IconSearch } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { usePolicy } from "@/lib/policies/context"
 
-function VerifyContent() {
+export default function VerifyPage() {
+  const policy = usePolicy()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const [vcId, setVcId] = React.useState(searchParams.get("ts") ?? "")
+  const [vcId, setVcId] = React.useState("")
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const trimmed = vcId.trim()
     if (!trimmed) return
-    router.push(`/documents/${encodeURIComponent(trimmed)}`)
+    router.push(`/policy/${policy.slug}/documents/${encodeURIComponent(trimmed)}`)
   }
 
   return (
@@ -52,15 +52,5 @@ function VerifyContent() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-export default function VerifyPage() {
-  return (
-    <DashboardLayout>
-      <React.Suspense>
-        <VerifyContent />
-      </React.Suspense>
-    </DashboardLayout>
   )
 }

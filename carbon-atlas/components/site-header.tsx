@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   IconBrandGithub,
@@ -10,17 +11,16 @@ import {
 } from "@tabler/icons-react"
 
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useNetwork } from "@/providers/NetworkProvider"
-import type { NetworkId } from "@/lib/config/networks"
+import { usePolicyMaybe } from "@/lib/policies/context"
+import { getDefaultPolicyForNetwork } from "@/lib/policies/registry"
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -44,33 +44,55 @@ function ThemeToggle() {
   )
 }
 
+const NETWORKS = ["testnet", "mainnet"] as const
+
 function NetworkSelector() {
-  const { network, setNetwork } = useNetwork()
+  const policy = usePolicyMaybe()
+  const router = useRouter()
+  const currentNetwork = policy?.network ?? "testnet"
+
+  function switchNetwork(network: "testnet" | "mainnet") {
+    if (network === currentNetwork) return
+    const target = getDefaultPolicyForNetwork(network)
+    router.push(`/policy/${target.slug}/dashboard`)
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="hidden sm:flex gap-1.5">
-          <span className={`inline-flex size-2 rounded-full ${network === "mainnet" ? "bg-green-500" : "bg-amber-500"}`} />
-          Hedera {network === "mainnet" ? "Mainnet" : "Testnet"}
-          <IconChevronDown className="size-3.5 opacity-50" />
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
+          <span
+            className={`inline-flex size-2 rounded-full ${
+              currentNetwork === "mainnet" ? "bg-green-500" : "bg-blue-500"
+            }`}
+          />
+          Hedera {currentNetwork.charAt(0).toUpperCase() + currentNetwork.slice(1)}
+          <IconChevronDown className="size-3 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup value={network} onValueChange={(v) => setNetwork(v as NetworkId)}>
-          <DropdownMenuRadioItem value="mainnet">
-            Mainnet
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="testnet">
-            Testnet
-          </DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
+        {NETWORKS.map((net) => (
+          <DropdownMenuItem
+            key={net}
+            onClick={() => switchNetwork(net)}
+            className={net === currentNetwork ? "bg-accent" : ""}
+          >
+            <span
+              className={`inline-flex size-2 rounded-full mr-2 ${
+                net === "mainnet" ? "bg-green-500" : "bg-blue-500"
+              }`}
+            />
+            Hedera {net.charAt(0).toUpperCase() + net.slice(1)}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
 
 export function SiteHeader() {
+  const policy = usePolicyMaybe()
+
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
@@ -81,11 +103,13 @@ export function SiteHeader() {
         />
         <div className="flex flex-col">
           <h1 className="text-base font-medium leading-tight">
-            Methodology for Metered & Measured Energy Cooking Devices
+            {policy?.fullName ?? "Carbon Atlas"}
           </h1>
-          <p className="text-xs text-muted-foreground hidden sm:block">
-            Gold Standard MECD v1.2 — ICVCM CCP-approved methodology
-          </p>
+          {policy && (
+            <p className="text-xs text-muted-foreground hidden sm:block">
+              {policy.standard} {policy.name}
+            </p>
+          )}
         </div>
         <div className="ml-auto flex items-center gap-1">
           <NetworkSelector />

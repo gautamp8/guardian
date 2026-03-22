@@ -132,6 +132,27 @@ describe("deduplicateProjects", () => {
     expect(projects[0].stage).toBe("Submitted")
     expect(projects[0].vc.options.entityType).toBe("project_form")
   })
+
+  it("shows Registered stage for project→project_form pairs without approved_project (VM0033 path)", () => {
+    // Simulate VM0033: project_form + project only (no approved_project yet)
+    const vm0033Form = makeVc("100.000", "project_form", ["99.000"], "did:hedera:mainnet:dev_allcot")
+    const vm0033Calc = makeVc("101.000", "project", ["100.000", "99.000"])
+    const projects = deduplicateProjects([vm0033Form, vm0033Calc])
+    expect(projects).toHaveLength(1)
+    expect(projects[0].stage).toBe("Registered")
+    expect(projects[0].vc.options.entityType).toBe("project")
+    expect(projects[0].developerDid).toBe("did:hedera:mainnet:dev_allcot")
+  })
+
+  it("does not double-count when approved_project covers the same project_form", () => {
+    // Full chain: form → calc → approved
+    const form = makeVc("200.000", "project_form", [], "did:dev")
+    const calc = makeVc("201.000", "project", ["200.000"])
+    const approved = makeVc("202.000", "approved_project", ["201.000"])
+    const projects = deduplicateProjects([form, calc, approved])
+    expect(projects).toHaveLength(1)
+    expect(projects[0].stage).toBe("Validated")
+  })
 })
 
 describe("getProjectDevelopers", () => {

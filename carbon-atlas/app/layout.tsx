@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import "./globals.css"
 import { QueryProvider } from "@/providers/QueryProvider"
-import { NetworkProvider } from "@/providers/NetworkProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Carbon Atlas",
   description:
-    "Traceable record of verified emission reductions under Gold Standard MECD v1.2 — Metered & Measured Energy Cooking Devices, anchored on Hedera via Guardian",
+    "Multi-policy carbon credit explorer — transparent, verifiable environmental asset issuances on Hedera Guardian",
   icons: {
     icon: "/hedera-logo.png",
   },
@@ -40,9 +39,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NetworkProvider>
-            <QueryProvider>{children}</QueryProvider>
-          </NetworkProvider>
+          <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -22,8 +22,10 @@ import {
 } from "@/components/ui/table"
 import { usePolicyVcDocuments } from "@/hooks/usePolicyVcDocuments"
 import { formatTimestamp, shortenDid } from "@/lib/utils/format"
+import { usePolicy } from "@/lib/policies/context"
 
 export function RecentIssuancesTable() {
+  const policy = usePolicy()
   const { data, isLoading, error } = usePolicyVcDocuments("approved_report", 0, 10)
 
   return (
@@ -34,7 +36,7 @@ export function RecentIssuancesTable() {
           <CardDescription>Latest verified monitoring reports</CardDescription>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link href="/issuances">View All</Link>
+          <Link href={`/policy/${policy.slug}/issuances`}>View All</Link>
         </Button>
       </CardHeader>
       <CardContent>
@@ -49,7 +51,12 @@ export function RecentIssuancesTable() {
             Error: {error.message}
           </p>
         )}
-        {data && (
+        {data && data.items.length === 0 && (
+          <p className="text-sm text-muted-foreground py-4">
+            No issuances found. Projects under this methodology have not yet completed the monitoring and verification process.
+          </p>
+        )}
+        {data && data.items.length > 0 && (
           <div className="overflow-hidden rounded-lg border">
             <Table>
               <TableHeader className="bg-muted">
@@ -79,7 +86,7 @@ export function RecentIssuancesTable() {
                     </TableCell>
                     <TableCell>
                       <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/issuances/${item.consensusTimestamp}`}>
+                        <Link href={`/policy/${policy.slug}/issuances/${item.consensusTimestamp}`}>
                           <IconExternalLink className="size-3 mr-1" />
                           Trust Chain
                         </Link>

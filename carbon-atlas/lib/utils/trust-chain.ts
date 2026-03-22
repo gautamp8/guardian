@@ -53,7 +53,7 @@ export const ENTITY_TYPE_CONFIG: Record<EntityType, EntityTypeConfig> = {
     summaryFields: ["vvb_name", "conclusion"],
   },
   project: {
-    label: "Calculated Project",
+    label: "Completed PDD",
     color: "orange",
     order: 6,
     icon: "calculator",
@@ -232,14 +232,19 @@ export function deduplicateProjects(
   const approvedProjects = allVcs.filter(
     (vc) => vc.options?.entityType === "approved_project"
   )
+  const calculatedProjects = allVcs.filter(
+    (vc) => vc.options?.entityType === "project"
+  )
   const projectForms = allVcs.filter(
     (vc) => vc.options?.entityType === "project_form"
   )
 
-  // Trace approved_project → project → project_form to find covered forms
+  // Track which project_form timestamps are "covered" by a higher-stage entity
   const coveredFormTs = new Set<string>()
   const formForApproved = new Map<string, VCListItem>()
+  const formForCalculated = new Map<string, VCListItem>()
 
+  // Phase 1: approved_project → project → project_form
   for (const ap of approvedProjects) {
     const rels = ap.options?.relationships ?? []
     for (const relTs of rels) {
@@ -257,9 +262,21 @@ export function deduplicateProjects(
     }
   }
 
+  // Phase 2: project → project_form (for policies without approved_project yet)
+  for (const calc of calculatedProjects) {
+    const rels = calc.options?.relationships ?? []
+    for (const relTs of rels) {
+      const rel = byTs.get(relTs)
+      if (rel?.options?.entityType === "project_form") {
+        coveredFormTs.add(relTs)
+        formForCalculated.set(calc.consensusTimestamp, rel)
+      }
+    }
+  }
+
   const results: { vc: VCListItem; developerDid: string | undefined; stage: string }[] = []
 
-  // Approved projects — show as "Validated" with the developer's DID
+  // Approved projects — show as "Validated"
   for (const ap of approvedProjects) {
     const form = formForApproved.get(ap.consensusTimestamp)
     results.push({
@@ -269,7 +286,24 @@ export function deduplicateProjects(
     })
   }
 
-  // Uncovered project_forms — projects not yet validated
+  // Registered projects (PDD auto-completed, not yet validated) — show as "Registered"
+  // Only if their form wasn't already covered by an approved_project
+  const formsAlreadyCoveredByApproved = new Set(
+    Array.from(formForApproved.values()).map((f) => f.consensusTimestamp)
+  )
+  for (const calc of calculatedProjects) {
+    const form = formForCalculated.get(calc.consensusTimestamp)
+    if (form && formsAlreadyCoveredByApproved.has(form.consensusTimestamp)) continue
+    if (form) {
+      results.push({
+        vc: calc,
+        developerDid: form.options?.issuer ?? calc.options?.issuer,
+        stage: "Registered",
+      })
+    }
+  }
+
+  // Uncovered project_forms — projects not yet calculated or validated
   for (const pf of projectForms) {
     if (!coveredFormTs.has(pf.consensusTimestamp)) {
       results.push({

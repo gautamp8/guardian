@@ -4,7 +4,7 @@ import { useMemo } from "react"
 import { useQueries } from "@tanstack/react-query"
 import { useAllPolicyVcs } from "./usePolicyVcDocuments"
 import { getVcDocument, parseCredentialSubject } from "@/lib/api/vc-documents"
-import { useNetwork } from "@/providers/NetworkProvider"
+import { usePolicyMaybe } from "@/lib/policies/context"
 
 /** Safely traverse nested path like "emission_reduction.ER_y" */
 function get(obj: Record<string, unknown>, path: string): unknown {
@@ -14,10 +14,8 @@ function get(obj: Record<string, unknown>, path: string): unknown {
 /** Parse a date string that may be ISO, DD/MM/YYYY, or MM/DD/YYYY into YYYY-MM-DD. */
 function normalizeDate(value: string | undefined): string | null {
   if (!value) return null
-  // Try ISO / standard JS-parseable format first
   const d = new Date(value)
   if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d.toISOString().split("T")[0]
-  // Try DD/MM/YYYY (common in Gold Standard data)
   const parts = value.split("/")
   if (parts.length === 3) {
     const [a, b, c] = parts
@@ -42,18 +40,25 @@ export interface IssuanceDataPoint {
 }
 
 export function useDashboardStats() {
-  const { network } = useNetwork()
+  const policy = usePolicyMaybe()
+  const network = policy?.network ?? "testnet"
+  const extractors = policy?.statsExtractors ?? {
+    eryPath: "emission_reduction.ER_y",
+    deviceCountPath: "project_emission_electricity.total_usage.number_of_devices",
+    periodPath: "monitoring_period.to",
+  }
+
   const { data: approvedReports, isLoading: loadingAR } = useAllPolicyVcs("approved_report")
   const { data: projects, isLoading: loadingProj } = useAllPolicyVcs("approved_project")
+  const { data: projectForms, isLoading: loadingPF } = useAllPolicyVcs("project_form")
   const { data: mrvReports, isLoading: loadingMRV } = useAllPolicyVcs("daily_mrv_report")
 
   // Fetch detail for each approved_report to get ER_y and device count
   const detailQueries = useQueries({
     queries: (approvedReports ?? []).map((vc) => ({
-      queryKey: ["vc-document", network, vc.consensusTimestamp],
+      queryKey: ["vc-document", vc.consensusTimestamp, network],
       queryFn: () => getVcDocument(vc.consensusTimestamp, network),
       staleTime: 15 * 60 * 1000,
-      retry: false,
       enabled: !!approvedReports,
     })),
   })
@@ -61,10 +66,9 @@ export function useDashboardStats() {
   // Fetch detail for MRV reports as fallback for device count
   const mrvDetailQueries = useQueries({
     queries: (mrvReports ?? []).map((vc) => ({
-      queryKey: ["vc-document", network, vc.consensusTimestamp],
+      queryKey: ["vc-document", vc.consensusTimestamp, network],
       queryFn: () => getVcDocument(vc.consensusTimestamp, network),
       staleTime: 15 * 60 * 1000,
-      retry: false,
       enabled: !!mrvReports,
     })),
   })
@@ -72,8 +76,8 @@ export function useDashboardStats() {
   const loadingDetails = detailQueries.some((q) => q.isLoading)
   const loadingMrvDetails = mrvDetailQueries.some((q) => q.isLoading)
 
-  // Extract ER_y, device count, and chart data from approved reports
   const reportData = useMemo(() => {
+    if (!extractors.eryPath) return null
     if (loadingDetails || detailQueries.length === 0) return null
 
     let totalERy = 0
@@ -86,13 +90,12 @@ export function useDashboardStats() {
       const cs = parseCredentialSubject(q.data)
       if (!cs) continue
 
-      const ery = get(cs, "emission_reduction.ER_y")
-      const numDevices = get(cs, "project_emission_electricity.total_usage.number_of_devices")
+      const ery = extractors.eryPath ? get(cs, extractors.eryPath) : undefined
+      const numDevices = extractors.deviceCountPath ? get(cs, extractors.deviceCountPath) : undefined
       const field0 = get(cs, "project_emission_electricity.total_usage.field0")
-      const periodTo = get(cs, "monitoring_period.to") as string | undefined
+      const periodTo = extractors.periodPath ? get(cs, extractors.periodPath) as string | undefined : undefined
 
       const eryVal = typeof ery === "number" ? ery : 0
-      // Prefer number_of_devices, fall back to field0 array length
       const devVal = typeof numDevices === "number"
         ? numDevices
         : Array.isArray(field0) ? field0.length : 0
@@ -100,7 +103,6 @@ export function useDashboardStats() {
       totalERy += eryVal
       totalDevices += devVal
 
-      // Use monitoring period end date, fall back to consensus timestamp
       const ts = approvedReports?.[i]?.consensusTimestamp ?? ""
       const tsSeconds = parseInt(ts.split(".")[0], 10)
       const tsFallback = isNaN(tsSeconds) ? "" : new Date(tsSeconds * 1000).toISOString().split("T")[0]
@@ -114,9 +116,8 @@ export function useDashboardStats() {
     }
 
     return { totalERy, totalDevices, points }
-  }, [loadingDetails, detailQueries, approvedReports])
+  }, [loadingDetails, detailQueries, approvedReports, extractors])
 
-  // Fallback: count devices from MRV reports if approved reports had none
   const mrvDeviceCount = useMemo(() => {
     if (loadingMrvDetails || mrvDetailQueries.length === 0) return 0
     let count = 0
@@ -124,7 +125,6 @@ export function useDashboardStats() {
       if (!q.data) continue
       const cs = parseCredentialSubject(q.data)
       if (!cs) continue
-      // daily_mrv_report may have field0 at top level or nested
       const field0 = Array.isArray((cs as Record<string, unknown>).field0)
         ? (cs as Record<string, unknown>).field0
         : get(cs, "project_emission_electricity.total_usage.field0")
@@ -135,7 +135,6 @@ export function useDashboardStats() {
 
   const totalDevices = reportData?.totalDevices || mrvDeviceCount || null
 
-  // Build cumulative chart data sorted by date
   const chartData = useMemo((): IssuanceDataPoint[] => {
     if (!reportData?.points.length) return []
     const sorted = [...reportData.points].sort((a, b) => a.date.localeCompare(b.date))
@@ -148,13 +147,22 @@ export function useDashboardStats() {
     })
   }, [reportData])
 
+  // Compute validation stage for policies without issuances
+  const validationStage = useMemo(() => {
+    if ((approvedReports?.length ?? 0) > 0) return "Issued"
+    if ((projects?.length ?? 0) > 0) return "Validated"
+    if ((projectForms?.length ?? 0) > 0) return "Submitted"
+    return "No Projects"
+  }, [approvedReports, projects, projectForms])
+
   return {
     issuanceCount: approvedReports?.length ?? 0,
-    projectCount: projects?.length ?? 0,
+    projectCount: (projects?.length ?? 0) + (projectForms?.length ?? 0),
     mrvBatchCount: mrvReports?.length ?? 0,
     totalERy: reportData?.totalERy ?? null,
     totalDevices,
     chartData,
-    isLoading: loadingAR || loadingProj || loadingMRV || loadingDetails,
+    validationStage,
+    isLoading: loadingAR || loadingProj || loadingPF || loadingMRV || loadingDetails || loadingMrvDetails,
   }
 }

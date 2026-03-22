@@ -33,7 +33,7 @@ export async function fetchProxy<T>(
   searchParams.set("_network", network)
 
   const qs = searchParams.toString()
-  const url = `/api/proxy/${path}${qs ? `?${qs}` : ""}`
+  const url = `/api/proxy/${network}/${path}${qs ? `?${qs}` : ""}`
 
   const res = await fetch(url, {
     next: { revalidate: 60 },
