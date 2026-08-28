@@ -22,7 +22,18 @@ PolicyNetworkProvider (client context, persisted in localStorage)
 - **Multi-network:** Each policy declares supported networks. Mainnet is default when supported; header toggle switches to testnet.
 - **Auth proxy:** `app/api/proxy/[network]/[...path]/route.ts` injects Bearer JWT server-side. `lib/api/auth.ts` manages the MGS SSO chain (login → access-token → sso/generate) with auto-refresh.
 - **API client:** `lib/api/client.ts` — `fetchProxy()` routes all client-side calls through the proxy with `ApiError` class for smart retry (4xx = no retry, 5xx = retry with backoff).
-- **Offline fallback:** when the indexer cannot be reached (failed auth chain, non-2xx, network error) the proxy serves `lib/fallback/snapshot.json` instead of erroring. Regenerate with `node scripts/build-fallback-snapshot.mjs`, which rebuilds it from the Hedera mirror node and IPFS — no Guardian credentials needed. `INDEXER_FORCE_FALLBACK=1` bypasses the indexer entirely.
+- **Offline fallback:** the proxy always tries the live indexer first, retrying 3 times with backoff (300ms, 900ms) on network errors, timeouts, 401s and 5xx. Only when every attempt fails does it serve `lib/fallback/snapshot.json`, tagged with an `x-carbon-atlas-source: offline-snapshot` response header. `INDEXER_FORCE_FALLBACK=1` skips the indexer entirely (useful for testing the fallback).
+
+### Refreshing the snapshot
+
+```bash
+npm run snapshot              # all sources
+npm run snapshot -- --no-indexer   # public sources only
+```
+
+Rows always come from the Hedera mirror node, so the snapshot rebuilds with no credentials. Document bodies are taken from the first source that has them: the **live indexer**, then **IPFS**, then **the previous snapshot** — that last step means a run without a subscription can never discard bodies an earlier run captured.
+
+**Run this while the Guardian subscription is active.** The indexer is the only source for documents whose IPFS pins have expired — VM0033's already have, so its bodies exist solely because they were captured from the indexer. The script prints a warning if any body is missing. Re-run after new issuances so the snapshot keeps up.
 - **Caching:** TanStack Query with 15 min staleTime, 1 hr gcTime. Keyed per slug+network.
 - **Theming:** `next-themes` with system default, dark/light toggle in header.
 

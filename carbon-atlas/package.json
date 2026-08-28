@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "snapshot": "node scripts/build-fallback-snapshot.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

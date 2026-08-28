@@ -1,16 +1,19 @@
 /**
  * Offline fallback for the Guardian indexer.
  *
- * snapshot.json is rebuilt by scripts/build-fallback-snapshot.mjs from the
- * Hedera mirror node and the IPFS bodies the topic messages reference, so the
- * dashboard keeps rendering real on-chain data when the upstream indexer is
- * unreachable — an outage, or a lapsed MGS subscription.
+ * snapshot-data.js is rebuilt by scripts/build-fallback-snapshot.mjs from the
+ * Hedera mirror node, IPFS and the live indexer, so the dashboard keeps
+ * rendering real on-chain data when the upstream indexer is unreachable — an
+ * outage, or a lapsed MGS subscription.
  *
- * This is a read-only mirror of two endpoints. Anything else returns null and
- * the proxy surfaces the upstream error as before.
+ * The snapshot is ~17 MB of JSON (VM0033's PDDs carry 40-year projection
+ * tables), so it ships gzipped and is imported lazily: a request that the live
+ * indexer serves never loads or parses it.
+ *
+ * This is a read-only mirror of two endpoints. Anything else resolves to null
+ * and the proxy surfaces the upstream error as before.
  */
 
-import snapshot from "./snapshot.json"
 import type { PolicyVcListResponse, VCDetail, VCListItem } from "@/lib/types/indexer"
 
 interface SnapshotPolicy {
@@ -21,6 +24,7 @@ interface SnapshotPolicy {
   items: VCListItem[]
   documents: Record<string, VCDetail>
   hydrated: number
+  expectedDocuments?: number
 }
 
 interface Snapshot {
@@ -30,13 +34,36 @@ interface Snapshot {
   policies: Record<string, SnapshotPolicy>
 }
 
-const data = snapshot as unknown as Snapshot
-
-export const snapshotGeneratedAt = data.generatedAt
-
 /** Marks a response as coming from the snapshot rather than the live indexer. */
 export const FALLBACK_HEADER = "x-carbon-atlas-source"
 export const FALLBACK_DATE_HEADER = "x-carbon-atlas-snapshot-date"
+
+let cached: Snapshot | null = null
+let inflight: Promise<Snapshot> | null = null
+
+/** Inflate once per process; concurrent callers share the same work. */
+async function loadSnapshot(): Promise<Snapshot> {
+  if (cached) return cached
+  if (!inflight) {
+    inflight = (async () => {
+      const [{ default: base64 }, { gunzipSync }] = await Promise.all([
+        import("./snapshot-data.js"),
+        import("node:zlib"),
+      ])
+      cached = JSON.parse(gunzipSync(Buffer.from(base64, "base64")).toString("utf8")) as Snapshot
+      return cached
+    })().finally(() => {
+      inflight = null
+    })
+  }
+  return inflight
+}
+
+/** When the snapshot was built. Cheap — does not inflate the payload. */
+export async function getSnapshotGeneratedAt(): Promise<string> {
+  const { generatedAt } = await import("./snapshot-data.js")
+  return generatedAt
+}
 
 function listResponse(
   policy: SnapshotPolicy,
@@ -65,20 +92,23 @@ function listResponse(
  * @param path     upstream path, e.g. "entities/vc-documents"
  * @returns the response body, or null when the snapshot cannot serve it
  */
-export function resolveFallback(
+export async function resolveFallback(
   network: string,
   path: string,
   searchParams: URLSearchParams
-): PolicyVcListResponse | VCDetail | null {
-  const listMatch = path === "entities/vc-documents"
-  const detailMatch = path.startsWith("entities/vc-documents/")
+): Promise<PolicyVcListResponse | VCDetail | null> {
+  const isList = path === "entities/vc-documents"
+  const isDetail = path.startsWith("entities/vc-documents/")
+  if (!isList && !isDetail) return null
 
-  if (!listMatch && !detailMatch) return null
+  // Cheap rejections happen before inflating the payload.
+  const policyId = isList ? searchParams.get("analytics.policyId") : null
+  if (isList && !policyId) return null
 
-  if (listMatch) {
-    const policyId = searchParams.get("analytics.policyId")
-    if (!policyId) return null
-    const policy = data.policies[policyId]
+  const data = await loadSnapshot()
+
+  if (isList) {
+    const policy = data.policies[policyId!]
     if (!policy || policy.network !== network) return null
     return listResponse(policy, searchParams)
   }

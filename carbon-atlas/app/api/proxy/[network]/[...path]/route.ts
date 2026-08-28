@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getIndexerToken, invalidateTokens } from "@/lib/api/auth"
 import {
   resolveFallback,
-  snapshotGeneratedAt,
+  getSnapshotGeneratedAt,
   FALLBACK_HEADER,
   FALLBACK_DATE_HEADER,
 } from "@/lib/fallback/serve"
@@ -13,6 +13,15 @@ const BASE_URL =
 /** Set to "1" to serve the offline snapshot and skip the indexer entirely. */
 const FORCE_FALLBACK = process.env.INDEXER_FORCE_FALLBACK === "1"
 
+/** Total upstream attempts before giving up and serving the snapshot. */
+const MAX_ATTEMPTS = 3
+/** Delay before attempt N (index 0 is the first retry). */
+const BACKOFF_MS = [300, 900]
+/** Give up on a single upstream call rather than hanging the request. */
+const UPSTREAM_TIMEOUT_MS = 20_000
+
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+
 async function fetchUpstream(upstreamUrl: string, token: string) {
   return fetch(upstreamUrl, {
     headers: {
@@ -20,16 +29,22 @@ async function fetchUpstream(upstreamUrl: string, token: string) {
       "Content-Type": "application/json",
     },
     cache: "no-store",
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
   })
 }
 
-function fallbackResponse(
+/** 5xx and 429 are worth another go; other 4xx will fail the same way again. */
+function isRetryableStatus(status: number) {
+  return status >= 500 || status === 429
+}
+
+async function fallbackResponse(
   network: string,
   pathStr: string,
   searchParams: URLSearchParams,
   reason: string
 ) {
-  const data = resolveFallback(network, pathStr, searchParams)
+  const data = await resolveFallback(network, pathStr, searchParams)
   if (!data) return null
 
   console.warn(`[proxy] serving offline snapshot for ${network}/${pathStr} (${reason})`)
@@ -38,7 +53,7 @@ function fallbackResponse(
     status: 200,
     headers: {
       [FALLBACK_HEADER]: "offline-snapshot",
-      [FALLBACK_DATE_HEADER]: snapshotGeneratedAt,
+      [FALLBACK_DATE_HEADER]: await getSnapshotGeneratedAt(),
       // Short TTL so the live indexer is picked up again as soon as it returns.
       "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
     },
@@ -56,45 +71,68 @@ export async function GET(
   const qs = searchParams.toString()
 
   if (FORCE_FALLBACK) {
-    const forced = fallbackResponse(network, pathStr, searchParams, "INDEXER_FORCE_FALLBACK")
+    const forced = await fallbackResponse(network, pathStr, searchParams, "INDEXER_FORCE_FALLBACK")
     if (forced) return forced
   }
 
   const upstreamUrl = `${BASE_URL}/${network}/${pathStr}${qs ? `?${qs}` : ""}`
 
-  let res: Response
-  try {
-    let token = await getIndexerToken()
-    res = await fetchUpstream(upstreamUrl, token)
+  let res: Response | null = null
+  let lastReason = "unknown"
 
-    // On 401, invalidate cached token and retry once with a fresh token
-    if (res.status === 401) {
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (attempt > 0) {
+      await sleep(BACKOFF_MS[Math.min(attempt - 1, BACKOFF_MS.length - 1)])
+    }
+
+    try {
+      const token = await getIndexerToken()
+      const candidate = await fetchUpstream(upstreamUrl, token)
+
+      if (candidate.ok) {
+        res = candidate
+        break
+      }
+
+      // A stale token looks like a 401 — drop it so the next attempt re-auths.
+      if (candidate.status === 401) {
+        invalidateTokens()
+        lastReason = "upstream 401"
+        continue
+      }
+
+      if (isRetryableStatus(candidate.status)) {
+        lastReason = `upstream ${candidate.status}`
+        continue
+      }
+
+      // Non-retryable client error — pass it through untouched.
+      res = candidate
+      break
+    } catch (err) {
+      // The auth chain or the request itself failed: expired subscription, MGS
+      // outage, timeout, DNS. Drop any cached token in case it is the cause.
       invalidateTokens()
-      token = await getIndexerToken()
-      res = await fetchUpstream(upstreamUrl, token)
+      lastReason = err instanceof Error ? err.message : "request failed"
     }
+  }
 
-    // On 500, retry once — upstream indexer has transient failures
-    if (res.status === 500) {
-      res = await fetchUpstream(upstreamUrl, token)
-    }
-  } catch (err) {
-    // The auth chain itself failed (expired subscription, MGS outage, network
-    // error). Nothing was fetched, so fall back to the snapshot.
-    invalidateTokens()
-    const reason = err instanceof Error ? err.message : "auth failed"
-    const fallback = fallbackResponse(network, pathStr, searchParams, reason)
+  if (!res) {
+    const fallback = await fallbackResponse(network, pathStr, searchParams, lastReason)
     if (fallback) return fallback
 
-    console.error(`[proxy] ${network}/${pathStr} failed with no snapshot available:`, err)
+    console.error(
+      `[proxy] ${network}/${pathStr} failed after ${MAX_ATTEMPTS} attempts ` +
+      `with no snapshot available: ${lastReason}`
+    )
     return NextResponse.json(
-      { error: "Indexer unavailable", detail: reason },
+      { error: "Indexer unavailable", detail: lastReason },
       { status: 502, headers: { "Cache-Control": "no-store" } }
     )
   }
 
   if (!res.ok) {
-    const fallback = fallbackResponse(network, pathStr, searchParams, `upstream ${res.status}`)
+    const fallback = await fallbackResponse(network, pathStr, searchParams, `upstream ${res.status}`)
     if (fallback) return fallback
   }
 
