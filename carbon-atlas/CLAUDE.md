@@ -22,6 +22,7 @@ PolicyNetworkProvider (client context, persisted in localStorage)
 - **Multi-network:** Each policy declares supported networks. Mainnet is default when supported; header toggle switches to testnet.
 - **Auth proxy:** `app/api/proxy/[network]/[...path]/route.ts` injects Bearer JWT server-side. `lib/api/auth.ts` manages the MGS SSO chain (login → access-token → sso/generate) with auto-refresh.
 - **API client:** `lib/api/client.ts` — `fetchProxy()` routes all client-side calls through the proxy with `ApiError` class for smart retry (4xx = no retry, 5xx = retry with backoff).
+- **Offline fallback:** when the indexer cannot be reached (failed auth chain, non-2xx, network error) the proxy serves `lib/fallback/snapshot.json` instead of erroring. Regenerate with `node scripts/build-fallback-snapshot.mjs`, which rebuilds it from the Hedera mirror node and IPFS — no Guardian credentials needed. `INDEXER_FORCE_FALLBACK=1` bypasses the indexer entirely.
 - **Caching:** TanStack Query with 15 min staleTime, 1 hr gcTime. Keyed per slug+network.
 - **Theming:** `next-themes` with system default, dark/light toggle in header.
 
@@ -35,7 +36,10 @@ PolicyNetworkProvider (client context, persisted in localStorage)
 | `lib/policies/vm0033.ts` | VM0033 config (mainnet only) |
 | `lib/policies/renderers.ts` | Policy-specific VC renderer registry (client-only) |
 | `providers/PolicyNetworkProvider.tsx` | Combined policy + network React context |
-| `app/api/proxy/[network]/[...path]/route.ts` | Auth proxy with 401 invalidation + 500 retry |
+| `app/api/proxy/[network]/[...path]/route.ts` | Auth proxy with 401 invalidation, 500 retry, offline-snapshot fallback |
+| `lib/fallback/serve.ts` | Resolves proxy requests against the offline snapshot |
+| `lib/fallback/snapshot.json` | VC list rows + document bodies, rebuilt from mirror node + IPFS |
+| `scripts/build-fallback-snapshot.mjs` | Regenerates the snapshot from public sources |
 | `lib/api/auth.ts` | Server-side token manager — MGS SSO chain with auto-refresh |
 | `lib/api/client.ts` | `fetchProxy()` + `ApiError` class for client-side API calls |
 | `lib/api/vc-documents.ts` | API client with normalizeEntityTypes() (3-pass algorithm) |
