@@ -5,12 +5,12 @@ import * as React from "react"
 import { useEffect } from "react"
 import {
   MapContainer,
-  TileLayer,
   GeoJSON,
   useMap,
 } from "react-leaflet"
 import type { GeoJsonObject } from "geojson"
 import * as L from "leaflet"
+import { MapTileLayer } from "@/components/ui/map"
 
 interface BoundsSetterProps {
   geojson: GeoJsonObject
@@ -45,10 +45,9 @@ export function ProjectBoundaryMap({ geojson }: ProjectBoundaryMapProps) {
       className="rounded-lg"
       scrollWheelZoom={false}
     >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
+      {/* Shared basemap: OSM's own tile servers are a donated resource their
+          usage policy does not cover a product like this. */}
+      <MapTileLayer />
       <GeoJSON
         data={geojson}
         style={{

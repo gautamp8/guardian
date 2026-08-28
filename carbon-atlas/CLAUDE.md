@@ -48,6 +48,10 @@ Rows always come from the Hedera mirror node, so the snapshot rebuilds with no c
 **Run this while the Guardian subscription is active.** The indexer is the only source for documents whose IPFS pins have expired — VM0033's already have, so its bodies exist solely because they were captured from the indexer. The script prints a warning if any body is missing. Re-run after new issuances so the snapshot keeps up.
 - **Caching:** TanStack Query with 15 min staleTime, 1 hr gcTime. Keyed per slug+network.
 - **Theming:** `next-themes` with system default, dark/light toggle in header.
+- **Basemaps:** OpenFreeMap vector tiles (`dark` / `positron` by theme) rendered through MapLibre GL inside Leaflet via `@maplibre/maplibre-gl-leaflet`. No API key, no usage limits, no signup. All maps go through `MapTileLayer` in `components/ui/map.tsx`; pass `url`/`darkUrl` to that component if a raster layer is ever needed instead.
+  - **maplibre-gl is pinned to v5 on purpose.** On v6 the worker never answers tile-loading tasks, so vector tiles sit in state `loading` forever and maps render as a blank background with no console error. Check the maps actually draw before raising that range.
+  - CARTO was dropped because its keyless raster tiles are watermarked as of 2026; OSM's own tile servers are a donated resource whose usage policy does not cover this product.
+  - Attribution is required (ODbL) and is on: `Map` sets `attributionControl`, and `MapTileLayer` passes a single linked credit via `attributionControl.customAttribution`.
 
 ## Key Files
 

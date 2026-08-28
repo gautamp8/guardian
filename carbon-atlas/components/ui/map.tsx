@@ -50,6 +50,7 @@ import type {} from "leaflet.markercluster"
 import "leaflet.markercluster/dist/MarkerCluster.css"
 import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import "leaflet/dist/leaflet.css"
+import "maplibre-gl/dist/maplibre-gl.css"
 import {
     CircleIcon,
     LayersIcon,
@@ -201,7 +202,8 @@ function Map({
         <LeafletMapContainer
             zoom={zoom}
             maxZoom={maxZoom}
-            attributionControl={false}
+            // OSM data is ODbL — the basemap credit has to be visible.
+            attributionControl
             zoomControl={false}
             className={cn(
                 "z-50 size-full min-h-96 flex-1 rounded-md",
@@ -240,6 +242,79 @@ function useMapLayersContext() {
     return useContext(MapLayersContext)
 }
 
+/**
+ * OpenFreeMap serves OpenStreetMap-derived vector tiles with no API key and no
+ * usage limits. CARTO's keyless raster tiles are watermarked as of 2026, so
+ * these are the default basemap.
+ *
+ * NOTE: maplibre-gl is pinned to v5. Under v6 (tested 6.3.0 and 6.6.0) the
+ * worker accepts tile-loading tasks and never replies, so every vector tile
+ * sits in state "loading" forever and the map renders as an empty background —
+ * with no console error to show for it. Raster sources still load, which makes
+ * it look like a style problem rather than a worker one. Verify the maps
+ * actually draw before raising this range.
+ */
+const OPENFREEMAP_STYLES = {
+    light: "https://tiles.openfreemap.org/styles/positron",
+    dark: "https://tiles.openfreemap.org/styles/dark",
+}
+
+/**
+ * Required: OpenFreeMap serves OpenMapTiles schema tiles built from OSM data,
+ * which is ODbL-licensed. The style JSON carries no attribution of its own, so
+ * it has to be supplied here.
+ */
+const OPENFREEMAP_ATTRIBUTION =
+    '<a href="https://openfreemap.org" target="_blank" rel="noreferrer">OpenFreeMap</a> ' +
+    '&copy; <a href="https://www.openmaptiles.org/" target="_blank" rel="noreferrer">OpenMapTiles</a> ' +
+    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>'
+
+/**
+ * Renders an OpenFreeMap vector style through maplibre-gl-leaflet, which mounts
+ * a MapLibre canvas into Leaflet's tile pane so existing markers, popups and
+ * controls keep working unchanged.
+ *
+ * Added imperatively rather than as a react-leaflet component because the
+ * plugin extends L.Layer directly; both it and maplibre-gl are loaded on demand
+ * so they stay out of the initial bundle.
+ */
+function VectorBasemap({
+    styleUrl,
+    attribution,
+}: {
+    styleUrl: string
+    attribution: string
+}) {
+    const map = useMap()
+
+    useEffect(() => {
+        let layer: ReturnType<typeof import("@maplibre/maplibre-gl-leaflet").maplibreGL> | null =
+            null
+        let cancelled = false
+
+        void (async () => {
+            const { maplibreGL } = await import("@maplibre/maplibre-gl-leaflet")
+            // The map can unmount, or the theme flip again, while this resolves.
+            if (cancelled) return
+            layer = maplibreGL({
+                style: styleUrl,
+                // Left to itself the plugin concatenates the plain-text credits
+                // off each style source. customAttribution replaces that with a
+                // single linked one, which is what the ODbL asks for.
+                attributionControl: { customAttribution: attribution },
+            } as Parameters<typeof maplibreGL>[0])
+            layer.addTo(map)
+        })()
+
+        return () => {
+            cancelled = true
+            if (layer) layer.remove()
+        }
+    }, [map, styleUrl, attribution])
+
+    return null
+}
+
 function MapTileLayer({
     name = "Default",
     url,
@@ -259,43 +334,41 @@ function MapTileLayer({
     }
 
     const context = useContext(MapLayersContext)
-    const DEFAULT_URL =
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-    const DEFAULT_DARK_URL =
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-
     const { resolvedTheme } = useTheme()
-    const resolvedUrl =
-        resolvedTheme === "dark"
-            ? (darkUrl ?? url ?? DEFAULT_DARK_URL)
-            : (url ?? DEFAULT_URL)
-    const resolvedAttribution =
-        resolvedTheme === "dark" && darkAttribution
-            ? darkAttribution
-            : (attribution ??
-              '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>')
+    const isDark = resolvedTheme === "dark"
+
+    // A caller supplying its own tile URL still gets a raster layer.
+    const rasterUrl = isDark ? (darkUrl ?? url) : url
+    const resolvedAttribution = isDark
+        ? (darkAttribution ?? attribution ?? OPENFREEMAP_ATTRIBUTION)
+        : (attribution ?? OPENFREEMAP_ATTRIBUTION)
+    const styleUrl = isDark ? OPENFREEMAP_STYLES.dark : OPENFREEMAP_STYLES.light
 
     useEffect(() => {
         if (context) {
             context.registerTileLayer({
                 name,
-                url: resolvedUrl,
+                url: rasterUrl ?? styleUrl,
                 attribution: resolvedAttribution,
             })
         }
-    }, [context, name, url, attribution])
+    }, [context, name, rasterUrl, styleUrl, resolvedAttribution])
 
     if (context && context.selectedTileLayer !== name) {
         return null
     }
 
-    return (
-        <LeafletTileLayer
-            url={resolvedUrl}
-            attribution={resolvedAttribution}
-            {...props}
-        />
-    )
+    if (rasterUrl) {
+        return (
+            <LeafletTileLayer
+                url={rasterUrl}
+                attribution={resolvedAttribution}
+                {...props}
+            />
+        )
+    }
+
+    return <VectorBasemap styleUrl={styleUrl} attribution={resolvedAttribution} />
 }
 
 function MapLayerGroup({
