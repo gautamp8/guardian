@@ -22,7 +22,19 @@ PolicyNetworkProvider (client context, persisted in localStorage)
 - **Multi-network:** Each policy declares supported networks. Mainnet is default when supported; header toggle switches to testnet.
 - **Auth proxy:** `app/api/proxy/[network]/[...path]/route.ts` injects Bearer JWT server-side. `lib/api/auth.ts` manages the MGS SSO chain (login → access-token → sso/generate) with auto-refresh.
 - **API client:** `lib/api/client.ts` — `fetchProxy()` routes all client-side calls through the proxy with `ApiError` class for smart retry (4xx = no retry, 5xx = retry with backoff).
-- **Offline fallback:** the proxy always tries the live indexer first, retrying 3 times with backoff (300ms, 900ms) on network errors, timeouts, 401s and 5xx. Only when every attempt fails does it serve `lib/fallback/snapshot.json`, tagged with an `x-carbon-atlas-source: offline-snapshot` response header. `INDEXER_FORCE_FALLBACK=1` skips the indexer entirely (useful for testing the fallback).
+- **Offline fallback:** the proxy always tries the live indexer first, retrying 3 times with backoff (300ms, 900ms) on network errors, timeouts, 401s and 5xx. Only when every attempt fails does it serve the snapshot, tagged with an `x-carbon-atlas-source: offline-snapshot` response header. `INDEXER_FORCE_FALLBACK=1` skips the indexer entirely.
+
+### Checking the fallback still works
+
+Append `__fallback=1` to any proxy request to serve that one response from the snapshot, in any environment:
+
+```bash
+curl -sD- -o/dev/null \
+  'https://atlas.carbonmarketshq.com/api/proxy/mainnet/entities/vc-documents?analytics.policyId=1774178235.879591074&__fallback=1' \
+  | grep x-carbon-atlas
+```
+
+Without this the fallback is only exercised during an outage, which is the worst moment to find out it broke. Worth checking after any dependency or Next.js upgrade.
 
 ### Refreshing the snapshot
 

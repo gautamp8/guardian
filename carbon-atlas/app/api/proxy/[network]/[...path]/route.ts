@@ -68,11 +68,25 @@ export async function GET(
   const pathStr = path.join("/")
 
   const searchParams = new URLSearchParams(request.nextUrl.searchParams)
+
+  // ?__fallback=1 serves the snapshot for this one request. The fallback is
+  // otherwise only exercised during an outage — the worst moment to discover it
+  // does not work — so this makes it verifiable at any time, in any
+  // environment. It exposes nothing the endpoint does not already serve.
+  const probeFallback = searchParams.get("__fallback") === "1"
+  searchParams.delete("__fallback")
   const qs = searchParams.toString()
 
-  if (FORCE_FALLBACK) {
-    const forced = await fallbackResponse(network, pathStr, searchParams, "INDEXER_FORCE_FALLBACK")
+  if (FORCE_FALLBACK || probeFallback) {
+    const reason = probeFallback ? "__fallback probe" : "INDEXER_FORCE_FALLBACK"
+    const forced = await fallbackResponse(network, pathStr, searchParams, reason)
     if (forced) return forced
+    if (probeFallback) {
+      return NextResponse.json(
+        { error: "No snapshot entry for this request" },
+        { status: 404, headers: { "Cache-Control": "no-store" } }
+      )
+    }
   }
 
   const upstreamUrl = `${BASE_URL}/${network}/${pathStr}${qs ? `?${qs}` : ""}`
